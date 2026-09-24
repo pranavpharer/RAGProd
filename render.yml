@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: production-api
+    runtime: python
+    region: eu-west-1
+    plan: free
+    build:
+      build_command: pip install -r requirements.txt
+      run_command: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+      envVars:
+        - key: PYTHON_VERSION
+          value: "3.11"
+        - key: APP_ENV
+          value: production
+        - key: LOG_LEVEL
+          value: INFO
+        - key: RATE_LIMIT
+          value: "10/Minute"
+        - key : CACHE_TTL
+          value: "300"
+        - key: MAX_RETRIES  
+          value: "3"
+        - key: PRIMARY_MODEL
+          value: gemini-3.1-flash-lite
+        - key: FALLBACK_MODEL
+          value: gemini-3.1-flash
+        - key: GEMINI_API_KEY
+          sync: false
+        - key: LANGCHAIN_API_KEY
+          sync: false
+        # - key: LANGCHAIN_TRACING
+        #   value: "true"
+        - key: LANGCHAIN_TRACING_V2
+          value: "true"
+        - key: LANGCHAIN_PROJECT
+          value: "RAGProd"
+    healthCheck: /health
+    autoDeploy: true 
